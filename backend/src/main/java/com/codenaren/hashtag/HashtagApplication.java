@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class HashtagApplication {
+public class  HashtagApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(

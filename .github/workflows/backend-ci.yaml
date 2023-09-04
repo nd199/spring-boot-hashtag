@@ -1,0 +1,49 @@
+#name of the Workflow
+name: CI - Build Backend
+
+#on which Git request with branches
+on:
+  pull_request:
+    branches:
+      - main
+      - narendran-branch
+    paths:
+      - backend/**
+
+#With how many jobs
+jobs:
+  #machine and its services mentioned
+  build:
+    #machine
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    #Services : postgres db and its properties
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: codeNaren
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: databasehashtag
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    # with how many steps
+    steps:
+      #checkout a particular repo
+      - uses: actions/checkout@v3
+      #setup java and maven
+      - uses: actions/setup-java@v3
+        #along with properties of maven
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: clean and run testes with maven
+        run: mvn -ntp -B verify

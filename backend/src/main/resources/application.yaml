@@ -1,0 +1,25 @@
+server:
+  error:
+    include-message: always
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/databasehashtag
+    username: codeNaren
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  main:
+    web-application-type: servlet
+  devtools:
+    restart:
+      enabled: true
+logging:
+  level:
+    sql: debug

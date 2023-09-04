@@ -1,0 +1,32 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: codeNaren
+      POSTGRES_PASSWORD: password
+      PG_DATA: /data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - db
+    restart: unless-stopped
+  hashtag-net:
+      container_name: hashtag-net
+      image: codenaren/hashtag-net
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/databasehashtag
+      ports:
+        - "8088:8080"
+      networks:
+        - db
+      depends_on:
+        - db
+      restart: unless-stopped
+networks:
+  db:
+    driver: bridge
+volumes:
+  db:

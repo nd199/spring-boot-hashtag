@@ -11,12 +11,10 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class  HashtagApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(
                 HashtagApplication.class, args);
     }
-
     @Bean
     CommandLineRunner commandLineRunner(CustomerRepository customerRepository) {
         return args -> {

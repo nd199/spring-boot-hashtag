@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
       - narendran-branch
     paths:
       - backend/**
@@ -46,7 +46,7 @@ jobs:
         id: build-number
         run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
       - name: Build Package push with maven
-        run: mvn -ntp -B verify -Ddocker.imag.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
+        run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
       - name: Update Dockerrun.aws.json (api imagetag) with new Build Number
         run: |
           echo "Dockerrun.aws.json before updating tag"

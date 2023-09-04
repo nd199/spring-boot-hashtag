@@ -21,10 +21,11 @@
     <properties>
         <java.version>17</java.version>
         <maven.compiler.target>17</maven.compiler.target>
-<!--        <docker.username>codenaren</docker.username>-->
-<!--        <docker.image.name>hashtag-net</docker.image.name>-->
-<!--        <docker.imag.tag/>-->
+        <docker.username>codenaren</docker.username>
+        <docker.image.name>hashtag-net</docker.image.name>
+        <docker.image.tag/>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -197,21 +198,21 @@
                     </from>
                     <to>
                         <image>
-                            registry.hub.docker.com/${project.organization.name}/${project.artifactId}:${project.version}
+                            registry.hub.docker.com/${docker.username}/${docker.image.name}:${docker.image.tag}
                         </image>
                         <tags>
                             <tag>latest</tag>
                         </tags>
                     </to>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
             </plugin>
         </plugins>
     </build>

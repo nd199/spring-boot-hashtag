@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Sending slack message
         run: >
-          curl -X POST -H 'Content-type: application/json' 
+          curl && curl -X POST -H 'Content-type: application/json' 
           --data '{"text":"DEPLOYMENT HAS STARTED :progress_bar: :fingers_crossed:"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
       - uses: actions/checkout@v3
@@ -52,7 +52,7 @@ jobs:
         run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
       - name: Sending slack message
         run: > 
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":"Building with Maven :maven:"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
 
@@ -60,7 +60,7 @@ jobs:
         run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
       - name: Sending slack message
         run: >
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":":docker: Image: ${{steps.build-number.outputs.BUILD_NUMBER}} pushed here https://hub.docker.com/repository/docker/codenaren/hashtag-net"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
 
@@ -85,12 +85,12 @@ jobs:
           deployment_package: backend/Dockerrun.aws.json
       - name: Sending slack message
         run: >
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":":aws: Starting deployment to Elastic Beanstalk - :beanstalk:"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
       - name: Sending slack message
         run: >
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":"Committing and pushing stuff to github Repo - https://github.com/nd199/spring-boot-hashtag"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
 
@@ -104,13 +104,13 @@ jobs:
           
       - name: Sending slack message
         run: >
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":"Deployment completed to - http://hashtag-env.eba-bufc46pq.ap-south-1.elasticbeanstalk.com/"}'
           ${( secrets.SLACK_WEBHOOK_URL)}
           
       - name: Sending slack message
         if: always()
         run: >
-          curl -X POST -H 'Content-type: application/json'
+          curl && curl -X POST -H 'Content-type: application/json'
           --data '{"text":"JOB STATUS ${{job.status}}"}'
           ${( secrets.SLACK_WEBHOOK_URL)}

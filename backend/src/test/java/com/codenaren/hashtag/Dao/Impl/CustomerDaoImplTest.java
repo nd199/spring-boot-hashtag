@@ -1,6 +1,7 @@
 package com.codenaren.hashtag.Dao.Impl;
 
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.Repository.CustomerRepository;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +45,7 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 emailAddress,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         customerRepository.save(customer);
@@ -63,7 +64,7 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         customerRepository.save(customer);
@@ -82,7 +83,7 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         //When
@@ -103,7 +104,7 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         //When
@@ -122,7 +123,7 @@ class CustomerDaoImplTest {
         String lastName = FAKER.name().lastName();
         String email = FAKER.internet().safeEmailAddress();
         String password = FAKER.internet().password();
-        String gender = FAKER.dog().gender();
+        Gender gender = Gender.MALE;
         Integer age = FAKER.random().nextInt(18, 99);
         Customer customer = new Customer(
                 username,
@@ -157,7 +158,7 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         //When
@@ -184,15 +185,6 @@ class CustomerDaoImplTest {
         //Given
         String email = FAKER.internet().safeEmailAddress();
         String userName = FAKER.name().username();
-        Customer customer = new Customer(
-                userName,
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.internet().password(),
-                FAKER.dog().gender(),
-                FAKER.random().nextInt(18, 99)
-        );
         //When
         underTest.existsByUserNameAndEmail(userName, email);
         //Then

@@ -1,19 +1,16 @@
 package com.codenaren.hashtag.Entity;
 
 
-import com.codenaren.hashtag.Utils.ValidPassword;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
 @Entity(name = "Customer")
-@Getter
-@Setter
-@ToString
 @Table(
         name = "customer",
         uniqueConstraints = {
@@ -24,7 +21,8 @@ import java.util.Objects;
         }
 )
 @NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 public class Customer {
 
     @Id
@@ -37,16 +35,19 @@ public class Customer {
     private Long id;
 
     @Column(
+            name = "user_name",
             nullable = false
     )
     private String userName;
 
     @Column(
+            name = "first_name",
             nullable = false
     )
     private String firstName;
 
     @Column(
+            name = "last_name",
             nullable = false
     )
     private String lastName;
@@ -68,40 +69,64 @@ public class Customer {
     private String password;
 
     @Column(
-            nullable = false)
-    private String gender;
-
-    @Column(
             nullable = false
     )
     private int age;
 
-    public Customer(String userName,
-                    String firstName, String lastName,
-                    String email, String password, String gender,
-                    int age) {
+    @Column(
+            nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    public Customer(Long id, String userName, String firstName, String lastName, String email,
+                    String password, Gender gender, int age) {
+        this.id = id;
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.gender = gender;
         this.age = age;
+        this.gender = gender;
+    }
+
+    public Customer(String userName,
+                    String firstName, String lastName,
+                    String email, String password,
+                    Gender gender, int age) {
+        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.age = age;
+        this.gender = gender;
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return getId() != null && Objects.equals(getId(), customer.getId());
+        return age == customer.age && Objects.equals(id, customer.id) && Objects.equals(userName, customer.userName) && Objects.equals(firstName, customer.firstName) && Objects.equals(lastName, customer.lastName) && Objects.equals(email, customer.email) && Objects.equals(password, customer.password) && gender == customer.gender;
     }
 
     @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    public int hashCode() {
+        return Objects.hash(id, userName, firstName, lastName, email, password, age, gender);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+               "id=" + id +
+               ", userName='" + userName + '\'' +
+               ", firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", email='" + email + '\'' +
+               ", password='" + password + '\'' +
+               ", age=" + age +
+               ", gender=" + gender +
+               '}';
     }
 }

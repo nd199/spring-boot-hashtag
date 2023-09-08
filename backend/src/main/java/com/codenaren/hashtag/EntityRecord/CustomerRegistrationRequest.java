@@ -1,12 +1,14 @@
 package com.codenaren.hashtag.EntityRecord;
 
+import com.codenaren.hashtag.Entity.Gender;
+
 public record CustomerRegistrationRequest(
         String userName,
         String firstName,
         String lastName,
         String email,
         String password,
-        Integer age,
-        String gender
+        Gender gender,
+        Integer age
 ) {
 }

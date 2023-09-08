@@ -14,17 +14,17 @@ services:
       - db
     restart: unless-stopped
   hashtag-net:
-      container_name: hashtag-net
-      image: codenaren/hashtag-net
-      environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/databasehashtag
-      ports:
-        - "8088:8080"
-      networks:
-        - db
-      depends_on:
-        - db
-      restart: unless-stopped
+    container_name: hashtag-net
+    image: codenaren/hashtag-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/databasehashtag
+    ports:
+      - "8088:8080"
+    networks:
+      - db
+    depends_on:
+      - db
+    restart: unless-stopped
 networks:
   db:
     driver: bridge

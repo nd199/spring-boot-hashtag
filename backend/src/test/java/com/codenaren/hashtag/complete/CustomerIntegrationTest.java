@@ -2,6 +2,7 @@ package com.codenaren.hashtag.complete;
 
 
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
 import com.github.javafaker.Faker;
@@ -43,12 +44,11 @@ public class CustomerIntegrationTest {
         String userName = fakerName + UUID.randomUUID();
         String password = faker.internet().password();
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
-        String gender = faker.dog().gender();
         int age = faker.random().nextInt(15, 100);
-
+        Gender gender = Gender.getRandomGender();
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                userName, firstName, lastName, email, password, age, gender
+                userName, firstName, lastName, email, password, gender, age
         );
 
         webTestClient.post()
@@ -108,11 +108,11 @@ public class CustomerIntegrationTest {
         String userName = fakerName + UUID.randomUUID();
         String password = faker.internet().password();
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
-        String gender = faker.dog().gender();
+        Gender gender = Gender.getRandomGender();
         int age = faker.random().nextInt(15, 100);
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                userName, firstName, lastName, email, password, age, gender
+                userName, firstName, lastName, email, password, gender, age
         );
 
         webTestClient.post()
@@ -171,12 +171,11 @@ public class CustomerIntegrationTest {
         String userName = fakerName + UUID.randomUUID();
         String password = faker.internet().password();
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
-        String gender = faker.dog().gender();
+        Gender gender = Gender.getRandomGender();
         int age = faker.random().nextInt(15, 100);
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                userName, firstName, lastName, email, password, age, gender
-        );
+                userName, firstName, lastName, email, password, gender, age);
 
         webTestClient.post()
                 .uri(API + "/addCustomer")
@@ -209,7 +208,7 @@ public class CustomerIntegrationTest {
         String email1 = faker.internet().emailAddress();
         String lastName1 = name.lastName();
         String firstName1 = name.firstName();
-        String gender1 = faker.dog().gender();
+        Gender gender1 = Gender.getRandomGender();
         String userName1 = name.username();
 
         CustomerUpdateRequest updateRequest = new CustomerUpdateRequest(

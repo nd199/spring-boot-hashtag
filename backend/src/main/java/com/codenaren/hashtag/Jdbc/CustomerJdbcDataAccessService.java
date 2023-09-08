@@ -56,14 +56,15 @@ public class CustomerJdbcDataAccessService
         var sql = """
                                
                  INSERT  INTO  customer(
-                user_name, first_name, last_name, email, password, gender, age
+                user_name, first_name, last_name, email, password, age, gender
                 ) VALUES (?,?,?,?,?,?,?)
                 """;
 
         int update = jdbcTemplate.update(sql
                 , customer.getUserName(),
                 customer.getFirstName(), customer.getLastName(),
-                customer.getEmail(), customer.getPassword(), customer.getGender(), customer.getAge()
+                customer.getEmail(), customer.getPassword(),
+                customer.getAge(), customer.getGender().name()
         );
         System.out.println("Jdbc template.update" + update);
     }
@@ -116,13 +117,13 @@ public class CustomerJdbcDataAccessService
             sql = "UPDATE customer SET  password = ? WHERE id = ?";
             jdbcTemplate.update(sql, update.getPassword(), update.getId());
         }
-        if (update.getGender() != null) {
-            sql = "UPDATE customer SET  gender = ? WHERE id = ?";
-            jdbcTemplate.update(sql, update.getGender(), update.getId());
-        }
         if (update.getAge() >= 15) {
             sql = "UPDATE customer SET  age = ? WHERE id = ?";
             jdbcTemplate.update(sql, update.getAge(), update.getId());
+        }
+        if (update.getGender() != null) {
+            sql = "UPDATE customer SET  gender = ? WHERE id = ?";
+            jdbcTemplate.update(sql, update.getGender(), update.getId());
         }
     }
 
@@ -131,7 +132,7 @@ public class CustomerJdbcDataAccessService
 
         var sql =
                 """
-                        SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                        SELECT  id, user_name, first_name, last_name, email, password, age, gender
                         from customer WHERE id = ?
                         """;
         return jdbcTemplate.query(sql, customerRowMapper, id)
@@ -142,7 +143,7 @@ public class CustomerJdbcDataAccessService
     @Override
     public List<Customer> getAllCustomers() {
         var sql = """
-                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                SELECT  id, user_name, first_name, last_name, email, password, age, gender
                 from customer
                 """;
         return jdbcTemplate.query(sql, customerRowMapper);
@@ -151,7 +152,7 @@ public class CustomerJdbcDataAccessService
     @Override
     public Optional<Customer> findCustomerByUserName(String userName) {
         var sql = """
-                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                SELECT  id, user_name, first_name, last_name, email, password, age, gender
                 from customer where user_name = ?
                 """;
         return jdbcTemplate.query(sql, customerRowMapper, userName)

@@ -1,6 +1,7 @@
 package com.codenaren.hashtag.Utils;
 
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class CustomerRowMapper implements RowMapper<Customer> {
                 rs.getString("last_name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                rs.getString("gender"),
+                Gender.valueOf(rs.getString("gender")),
                 rs.getInt("age")
         );
     }

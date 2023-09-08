@@ -2,6 +2,7 @@ package com.codenaren.hashtag.Jdbc;
 
 import com.codenaren.hashtag.AbstractTestContainers;
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.Utils.CustomerRowMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,26 +27,6 @@ class CustomerJdbcDataAccessServiceTest extends AbstractTestContainers {
     }
 
     @Test
-    void existsByEmail() {
-    }
-
-    @Test
-    void existsByCustomerName() {
-    }
-
-    @Test
-    void registerCustomer() {
-    }
-
-    @Test
-    void removeCustomerByUserNameAndEmail() {
-    }
-
-    @Test
-    void updateCustomer() {
-    }
-
-    @Test
     void getAllCustomers() {
 
         Customer customer = new Customer(
@@ -54,7 +35,7 @@ class CustomerJdbcDataAccessServiceTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
 
@@ -66,10 +47,6 @@ class CustomerJdbcDataAccessServiceTest extends AbstractTestContainers {
     }
 
     @Test
-    void findByUserName() {
-    }
-
-    @Test
     void getByCustomerId() {
         String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
         Customer customer = new Customer(
@@ -78,7 +55,7 @@ class CustomerJdbcDataAccessServiceTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         service.registerCustomer(customer);

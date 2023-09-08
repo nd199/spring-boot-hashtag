@@ -145,8 +145,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setAge(updateRequest.age());
             isPresent = true;
         }
-        if (updateRequest.gender() != null &&
-            !updateRequest.gender().equals(customer.getGender())) {
+        if (updateRequest.gender() != null) {
             customer.setGender(updateRequest.gender());
             isPresent = true;
         }

@@ -2,6 +2,7 @@ package com.codenaren.hashtag.Repository;
 
 import com.codenaren.hashtag.AbstractTestContainers;
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -75,7 +76,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -107,7 +108,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -144,7 +145,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -169,7 +170,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
 

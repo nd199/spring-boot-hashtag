@@ -2,6 +2,7 @@ package com.codenaren.hashtag.Service.Impl;
 
 import com.codenaren.hashtag.Dao.Impl.CustomerDaoImpl;
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
 import com.codenaren.hashtag.Exceptions.ResourceNotFound;
@@ -49,7 +50,7 @@ class CustomerServiceImplTest {
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 "Keciaa12", "lopez", "1o",
-                email, "poofi", 20, "female"
+                email, "poofi", Gender.getRandomGender(), 20
         );
 
         //When
@@ -94,7 +95,7 @@ class CustomerServiceImplTest {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
         //When
@@ -112,7 +113,7 @@ class CustomerServiceImplTest {
         //When
         Customer customer = new Customer(
                 "ram1999", "Ram", "D", "r@gmail.com",
-                "rmd@2022", "Male", 23
+                "rmd@2022", Gender.getRandomGender(), 23
         );
         //Then
         when(customerDao.getByCustomerId(id))
@@ -121,7 +122,7 @@ class CustomerServiceImplTest {
         CustomerUpdateRequest updateRequest =
                 new CustomerUpdateRequest(
                         "ram125", "Ram", "d", email,
-                        "rm@2022hiAugust", "Male", 23
+                        "rm@2022hiAugust", Gender.getRandomGender(), 23
                 );
         when(customerDao.existsByEmail(email)).thenReturn(false);
 
@@ -155,7 +156,7 @@ class CustomerServiceImplTest {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
         customer.setId(2L);
@@ -192,7 +193,7 @@ class CustomerServiceImplTest {
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 userName, "lopez", "1o",
-                email, "poofi", 20, "female"
+                email, "poofi", Gender.getRandomGender(), 20
         );
         underTest.addCustomer(request);
         //When

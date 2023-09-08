@@ -2,6 +2,11 @@ server:
   error:
     include-message: always
   port: 8080
+
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/databasehashtag

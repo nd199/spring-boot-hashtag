@@ -48,12 +48,11 @@ public class CustomerController {
         customerService.updateCustomer(request, id);
     }
 
-    @DeleteMapping("/deleteUser/{userName}/{email}")
-    public void removeCustomerByUserNameAndEmail(@PathVariable("userName") String username,
-                                                 @PathVariable("email") String email) {
+    @DeleteMapping("/deleteCustomer/{id}")
+    public void removeCustomerByUserNameAndEmail(@PathVariable("id") Long id) {
         log.info("Request for removing" +
                  " User called in UserController" +
-                 " with username , email : {},{}", username, email);
-        customerService.removeCustomerByUserNameAndEmail(username, email);
+                 " with username , email : {}", id);
+        customerService.removeCustomerById(id);
     }
 }

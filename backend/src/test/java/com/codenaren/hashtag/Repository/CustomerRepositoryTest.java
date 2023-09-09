@@ -135,7 +135,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
     }
 
     @Test
-    void testDeleteByUserNameAndEmail() {
+    void testDeleteById() {
         //Given
         String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
         String username = FAKER.name().username();
@@ -145,19 +145,20 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                Gender.MALE,
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
+
+        customer.setId(2L);
+
         underTest.save(customer);
+
         //When
-        underTest.deleteByUserNameAndEmail(username, email);
+        underTest.deleteCustomerById(customer.getId());
         //Checking
-        Boolean existsByEmail = underTest.existsByEmail(email);
-        Boolean existsByUserName = underTest.existsByUserName(username);
+        Boolean existsById = underTest.existsById(customer.getId());
         //Then
-        assertThat(existsByEmail).isFalse();
-        //Fails when given true as Customer is already removed/deleted with userName
-        assertThat(existsByUserName).isFalse();
+        assertThat(existsById).isFalse();
     }
 
     @Test

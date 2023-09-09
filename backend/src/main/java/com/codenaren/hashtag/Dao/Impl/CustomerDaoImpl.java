@@ -33,6 +33,13 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     @Override
+    public boolean existsCustomerById(Long id) {
+        log.info("CustomerDaoImpl method on existByCustomerName called : {}", id);
+        log.info("customerRepository method on existByCustomerName called : {}", id);
+        return customerRepository.existsCustomerById(id);
+    }
+
+    @Override
     public void registerCustomer(Customer customer) {
         log.info("CustomerDaoImpl method on registerCustomer called : {}", customer);
         log.info("CustomerDaoImpl method on saveCustomer called : {}", customer);
@@ -40,17 +47,11 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     @Override
-    public void removeCustomerByUserNameAndEmail(String userName, String email) {
-        log.info("CustomerDaoImpl method on removeCustomer called : {},{}", userName, email);
+    public void removeCustomerById(Long id) {
+        log.info("CustomerDaoImpl method on removeCustomer called : {}", id);
         log.info("customerRepository method on deleteByCustomerNameAndEmail" +
-                 " called : {},{}", userName, email);
-        customerRepository.deleteByUserNameAndEmail(userName, email);
-    }
-
-    @Override
-    public boolean existsByUserNameAndEmail(String userName, String email) {
-        log.info("CustomerDaoImpl method on checking if customer exist by : {},{}", email, userName);
-        return customerRepository.existsByUserNameAndEmail(userName, email);
+                 " called : {}", id);
+        customerRepository.deleteCustomerById(id);
     }
 
     @Override

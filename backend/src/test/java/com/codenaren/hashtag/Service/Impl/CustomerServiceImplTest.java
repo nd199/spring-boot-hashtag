@@ -22,8 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceImplTest {
@@ -149,8 +148,10 @@ class CustomerServiceImplTest {
     @Test
     void canGetCustomerById() {
         //Given
+        Long id = 10L;
         String email = FAKER.internet().safeEmailAddress();
         Customer customer = new Customer(
+                id,
                 FAKER.name().username(),
                 FAKER.name().firstName(),
                 FAKER.name().lastName(),
@@ -159,12 +160,11 @@ class CustomerServiceImplTest {
                 Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
-        customer.setId(2L);
 
-        when(customerDao.getByCustomerId(customer.getId())).
+        when(customerDao.getByCustomerId(id)).
                 thenReturn(Optional.of(customer));
         //When
-        Customer actual = underTest.getCustomerById(customer.getId());
+        Customer actual = underTest.getCustomerById(id);
         //Then
         assertThat(actual).isEqualTo(customer);
     }
@@ -185,23 +185,29 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void removeCustomerByUserNameAndEmail() {
+    void removeCustomerById() {
         //Given
-        String email = "lopez@codeNaren.com";
-        String userName = "Keciaa12";
-        when(customerDao.existsByEmail(email)).thenReturn(false);
+        Long id = 10L;
 
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                userName, "lopez", "1o",
-                email, "poofi", Gender.getRandomGender(), 20
-        );
-        underTest.addCustomer(request);
+        when(customerDao.existsCustomerById(id)).thenReturn(true);
         //When
-        when(customerDao.existsByUserNameAndEmail(userName, email))
-                .thenReturn(true);
-
-        underTest.removeCustomerByUserNameAndEmail(userName, email);
+        underTest.removeCustomerById(id);
         //Then
-        assertThat(customerDao.existsByEmail(email)).isFalse();
+        verify(customerDao).removeCustomerById(id);
+    }
+
+    @Test
+    void throwExceptionWhenCustomerIdDoesNotExistDuringDeletion() {
+        //Given
+        Long id = 10L;
+
+        when(customerDao.existsCustomerById(id)).thenReturn(false);
+        //When
+        assertThatThrownBy(() -> underTest.removeCustomerById(id))
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage(
+                        "Customer with id [%s] not found".formatted(id));
+        //Then
+        verify(customerDao, never()).removeCustomerById(id);
     }
 }

@@ -142,9 +142,9 @@ public class CustomerIntegrationTest {
                 .map(Customer::getId).findFirst()
                 .orElseThrow();
 
-        //delete a csutomer
+        //delete a customer
         webTestClient.delete()
-                .uri(API + "deleteUser/{userName}/{email}", userName, email)
+                .uri(API + "deleteCustomer/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()

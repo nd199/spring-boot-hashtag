@@ -1,6 +1,6 @@
 'use client'
 
-import {Avatar, Box, Button, Center, Flex, Heading, Image, Stack, Tag, Text, useColorModeValue} from '@chakra-ui/react'
+import {Avatar, Box, Center, Flex, Heading, Image, Stack, Tag, Text, useColorModeValue} from '@chakra-ui/react'
 
 export default function CardWithImage({
                                           id,
@@ -53,34 +53,6 @@ export default function CardWithImage({
                         <Text color={'gray.500'}>{email}</Text>
                         <Text color={'gray.500'}> <span>Age:</span> {age} | {gender}</Text>
                     </Stack>
-
-                    <Stack direction={'row'} justify={'center'} spacing={6}>
-                        <Stack spacing={0} align={'center'}>
-                            <Text fontWeight={600}>23k</Text>
-                            <Text fontSize={'sm'} color={'gray.500'}>
-                                Followers
-                            </Text>
-                        </Stack>
-                        <Stack spacing={0} align={'center'}>
-                            <Text fontWeight={600}>23k</Text>
-                            <Text fontSize={'sm'} color={'gray.500'}>
-                                Followers
-                            </Text>
-                        </Stack>
-                    </Stack>
-
-                    <Button
-                        w={'full'}
-                        mt={8}
-                        bg={useColorModeValue('#151f21', 'gray.900')}
-                        color={'white'}
-                        rounded={'md'}
-                        _hover={{
-                            transform: 'translateY(-2px)',
-                            boxShadow: 'lg',
-                        }}>
-                        Follow
-                    </Button>
                 </Box>
             </Box>
         </Center>

@@ -18,7 +18,7 @@ public class CustomerJdbcDataAccessService
 
     private final CustomerRowMapper customerRowMapper;
     private final JdbcTemplate jdbcTemplate;
-    private CustomerDao customerDao;
+
 
     public CustomerJdbcDataAccessService(CustomerRowMapper customerRowMapper, JdbcTemplate jdbcTemplate) {
         this.customerRowMapper = customerRowMapper;
@@ -48,7 +48,42 @@ public class CustomerJdbcDataAccessService
 
     @Override
     public boolean existsByUserName(String userName) {
-        return false;
+        boolean exist = true;
+
+        var sql = """
+                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                from customer where email = ?
+                """;
+
+        Customer cus = jdbcTemplate.query(sql, customerRowMapper, userName)
+                .stream().findFirst().orElseThrow(
+                        () -> new ResourceNotFound("User does not exist with user name : " + userName)
+                );
+
+        if (!Objects.nonNull(cus)) {
+            exist = false;
+        }
+        return exist;
+    }
+
+    @Override
+    public boolean existsCustomerById(Long id) {
+        boolean exist = true;
+
+        var sql = """
+                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                from customer where id = ?
+                """;
+
+        Customer cus = jdbcTemplate.query(sql, customerRowMapper, id)
+                .stream().findFirst().orElseThrow(
+                        () -> new ResourceNotFound("User does not exist with user name : " + id)
+                );
+
+        if (!Objects.nonNull(cus)) {
+            exist = false;
+        }
+        return exist;
     }
 
     @Override
@@ -70,27 +105,11 @@ public class CustomerJdbcDataAccessService
     }
 
     @Override
-    public void removeCustomerByUserNameAndEmail(String userName, String email) {
-        var sql =
-                """
-                                 DELETE FROM customer WHERE user_name =
-                                  ? and email = ?
-                        """;
-        jdbcTemplate.update(sql, userName, email);
-    }
-
-    @Override
-    public boolean existsByUserNameAndEmail(String userName, String email) {
-        var sql =
-                """
-                                 Select count(id)
-                                  From customer WHERE user_name =
-                                  ? and email = ?
-                        """;
-        Integer count = jdbcTemplate.
-                queryForObject(sql, Integer.class, userName, email);
-
-        return count != null && count > 0;
+    public void removeCustomerById(Long id) {
+        var sql = """
+                DELETE FROM customer WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

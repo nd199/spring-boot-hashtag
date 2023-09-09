@@ -9,8 +9,6 @@ import java.util.List;
 public interface CustomerService {
     void addCustomer(CustomerRegistrationRequest request);
 
-    void removeCustomerByUserNameAndEmail(String userName, String email);
-
     List<Customer> getListOfCustomers();
 
     Customer findCustomerByUserName(String userName);
@@ -18,4 +16,6 @@ public interface CustomerService {
     void updateCustomer(CustomerUpdateRequest request, Long id);
 
     Customer getCustomerById(Long id);
+
+    void removeCustomerById(Long id);
 }

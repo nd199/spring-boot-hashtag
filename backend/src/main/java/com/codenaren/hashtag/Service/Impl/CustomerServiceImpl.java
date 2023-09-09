@@ -60,11 +60,11 @@ public class CustomerServiceImpl implements CustomerService {
             } else {
                 if (customerDao.existsByUserName(request.userName())) {
                     throw new ResourceAlreadyExists(
-                            "Customer", "userName", request.userName()
+                            "Username already taken"
                     );
                 } else if (customerDao.existsByEmail(request.email())) {
                     throw new ResourceAlreadyExists(
-                            "Customer", "email", request.email()
+                            "Email already taken"
                     );
                 } else {
                     Customer customer = getCustomer(request);
@@ -74,21 +74,6 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             throw new PasswordMustBeDifferent(
                     "User-Name and Password must not be same"
-            );
-        }
-    }
-
-
-    @Override
-    public void removeCustomerByUserNameAndEmail(String userName, String email) {
-        log.info("removeCustomer Method in CustomerServiceImpl called with " +
-                 "userName & email : {},{}", userName, email);
-        if (customerDao.existsByUserNameAndEmail(userName, email)) {
-            customerDao.removeCustomerByUserNameAndEmail(userName, email);
-        } else {
-            throw new ResourceNotFound(
-                    "No Customer Found with provided Username and email : {%s},{%s}"
-                            .formatted(userName, email)
             );
         }
     }
@@ -114,8 +99,6 @@ public class CustomerServiceImpl implements CustomerService {
                                Long id) {
         log.info("update customer called in customer service impl");
         Customer customer = getCustomerById(id);
-
-        System.out.println(customer);
 
         boolean isPresent = false;
 
@@ -153,7 +136,7 @@ public class CustomerServiceImpl implements CustomerService {
             !updateRequest.email().equals(customer.getEmail())) {
             if (customerDao.existsByEmail(updateRequest.email())) {
                 throw new ResourceAlreadyExists(
-                        "Customer", "email", updateRequest.email()
+                        "Email already taken"
                 );
             }
             customer.setEmail(updateRequest.email());
@@ -168,9 +151,21 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerById(Long id) {
-        return customerDao.getByCustomerId(id).orElseThrow(
-                () -> new ResourceNotFound("Customer with id : %s does not exist".formatted(id))
-        );
+        return customerDao.getByCustomerId(id)
+                .orElseThrow(()
+                        -> new ResourceNotFound(
+                        "Customer with id : %s not found".formatted(id))
+                );
+    }
+
+    @Override
+    public void removeCustomerById(Long customerId) {
+        if (!customerDao.existsCustomerById(customerId)) {
+            throw new ResourceNotFound(
+                    "Customer with id [%s] not found".formatted(customerId)
+            );
+        }
+        customerDao.removeCustomerById(customerId);
     }
 
 

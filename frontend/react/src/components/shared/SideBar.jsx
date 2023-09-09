@@ -1,5 +1,4 @@
-'use client'
-
+import React from "react";
 import {
     Avatar,
     Box,
@@ -21,7 +20,7 @@ import {
     useDisclosure,
     VStack,
 } from '@chakra-ui/react'
-import {FiBell, FiChevronDown, FiCompass, FiHome, FiMenu, FiSettings, FiStar, FiTrendingUp,} from 'react-icons/fi'
+import {FiBell, FiChevronDown, FiCompass, FiHome, FiMenu, FiSettings, FiStar, FiTrendingUp} from 'react-icons/fi'
 
 const LinkItems = [
     {name: 'Home', icon: FiHome},

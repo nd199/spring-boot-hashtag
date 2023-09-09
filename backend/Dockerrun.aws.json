@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "codenaren",
-      "image": "codenaren/hashtag-net:08.09.2023.13.11.53",
+      "image": "codenaren/hashtag-net:09.09.2023.14.55.13",
       "essential": true,
       "memory": 512,
       "portMappings": [

@@ -154,7 +154,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerDao.getByCustomerId(id)
                 .orElseThrow(()
                         -> new ResourceNotFound(
-                        "Customer with id : %s not found".formatted(id))
+                        "Customer with id [%s] not found".formatted(id))
                 );
     }
 

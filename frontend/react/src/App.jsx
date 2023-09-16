@@ -3,7 +3,7 @@ import SidebarWithHeader from "./components/shared/SideBar.jsx";
 import {useEffect, useState} from 'react';
 import {getCustomers} from "./services/Client.js";
 import CardWithImage from "./components/Card.jsx";
-import CForm from "./components/CForm.jsx";
+import CForm from "./components/forms/CreationForm.jsx";
 import {errorAlert} from "./services/AlertToast.js";
 
 const App = () => {
@@ -79,6 +79,7 @@ const App = () => {
                         <CardWithImage
                             {...customer}
                             imageNumber={index}
+                            fetchCustomers={fetchCustomers}
                         />
                     </WrapItem>
                 ))}

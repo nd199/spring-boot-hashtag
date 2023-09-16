@@ -14,21 +14,19 @@ const alert = (title, description, status) => {
 }
 
 
-export const successAlert =
-    (title, description) => {
-        alert(
-            title,
-            description,
-            "success"
-        )
-    }
+export const successAlert = (title, description) => {
+    alert(
+        title,
+        description,
+        "success"
+    )
+}
 
-export const errorAlert =
-    (title, description) => {
-        alert(
-            title,
-            description,
-            "error"
-        )
-    }
+export const errorAlert = (title, description) => {
+    alert(
+        title,
+        description,
+        "error"
+    )
+}
 

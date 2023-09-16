@@ -12,6 +12,7 @@ import com.codenaren.hashtag.Service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,18 +26,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerDao customerDao;
 
-    public CustomerServiceImpl(@Qualifier("jpa") CustomerDao customerDao) {
+    private final PasswordEncoder passwordEncoder;
+
+    public CustomerServiceImpl(@Qualifier("jpa") CustomerDao customerDao,
+                               PasswordEncoder passwordEncoder) {
         this.customerDao = customerDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private static Customer getCustomer(
+    private Customer getCustomer(
             CustomerRegistrationRequest request) {
         return new Customer(
                 request.userName(),
                 request.firstName(),
                 request.lastName(),
                 request.email(),
-                request.password(),
+                passwordEncoder.encode(request.password()),
                 request.gender(),
                 request.age()
         );
@@ -104,7 +109,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (updateRequest.userName() != null &&
             !updateRequest.userName()
-                    .equals(customer.getUserName())) {
+                    .equals(customer.getUsername())) {
             customer.setUserName(updateRequest.userName());
             isPresent = true;
         }

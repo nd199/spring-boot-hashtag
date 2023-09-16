@@ -142,9 +142,9 @@ class CustomerDaoImplTest {
         //When
         customerRepository.save(customer);
         //When
-        underTest.findCustomerByUserName(customer.getUserName());
+        underTest.findCustomerByUserName(customer.getUsername());
         //Then
-        verify(customerRepository).getCustomerByUserName(customer.getUserName());
+        verify(customerRepository).getCustomerByUserName(customer.getUsername());
     }
 
     @Test

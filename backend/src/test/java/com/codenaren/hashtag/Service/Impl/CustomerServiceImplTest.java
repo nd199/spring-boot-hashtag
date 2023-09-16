@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.quality.Strictness;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -33,11 +34,13 @@ class CustomerServiceImplTest {
     private CustomerServiceImpl underTest;
     @Mock
     private CustomerDaoImpl customerDao;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-        underTest = new CustomerServiceImpl(customerDao);
+        underTest = new CustomerServiceImpl(customerDao, passwordEncoder);
     }
 
     @Test
@@ -49,8 +52,12 @@ class CustomerServiceImplTest {
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 "Keciaa12", "lopez", "1o",
-                email, "poofi", Gender.getRandomGender(), 20
+                email, "password", Gender.getRandomGender(), 20
         );
+
+        String passwordTest = "a432f;ap.q;1.w;31123";
+
+        when(passwordEncoder.encode(request.password())).thenReturn(passwordTest);
 
         //When
         underTest.addCustomer(request);
@@ -64,11 +71,11 @@ class CustomerServiceImplTest {
         Customer customerCaptured = customerArgumentCaptor.getValue();
 
         assertThat(customerCaptured.getId()).isNull();
-        assertThat(customerCaptured.getUserName()).isEqualTo(request.userName());
+        assertThat(customerCaptured.getUsername()).isEqualTo(request.userName());
         assertThat(customerCaptured.getFirstName()).isEqualTo(request.firstName());
         assertThat(customerCaptured.getLastName()).isEqualTo(request.lastName());
         assertThat(customerCaptured.getEmail()).isEqualTo(request.email());
-        assertThat(customerCaptured.getPassword()).isEqualTo(request.password());
+        assertThat(customerCaptured.getPassword()).isEqualTo(passwordTest);
         assertThat(customerCaptured.getGender()).isEqualTo(request.gender());
         assertThat(customerCaptured.getAge()).isEqualTo(request.age());
 
@@ -136,7 +143,7 @@ class CustomerServiceImplTest {
         Customer customerCaptured = customerArgumentCaptor.getValue();
 
         assertThat(customerCaptured.getId()).isNull();
-        assertThat(customerCaptured.getUserName()).isEqualTo(updateRequest.userName());
+        assertThat(customerCaptured.getUsername()).isEqualTo(updateRequest.userName());
         assertThat(customerCaptured.getFirstName()).isEqualTo(updateRequest.firstName());
         assertThat(customerCaptured.getLastName()).isEqualTo(updateRequest.lastName());
         assertThat(customerCaptured.getEmail()).isEqualTo(updateRequest.email());

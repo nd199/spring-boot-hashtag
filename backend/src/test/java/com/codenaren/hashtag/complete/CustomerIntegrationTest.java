@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -24,7 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class CustomerIntegrationTest {
 
-    public static String API = "/api/v1/";
+    public static String API = "/api/v1/customers";
     //create Reg Request
     //send a post Request
     //get all customers
@@ -32,6 +33,9 @@ public class CustomerIntegrationTest {
     // get customer by id
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void canRegisterACustomer() {
@@ -42,7 +46,7 @@ public class CustomerIntegrationTest {
         String lastName = name.lastName();
         String fakerName = firstName + lastName;
         String userName = fakerName + UUID.randomUUID();
-        String password = faker.internet().password();
+        String password = passwordEncoder.encode(faker.internet().password());
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
         int age = faker.random().nextInt(15, 100);
         Gender gender = Gender.getRandomGender();
@@ -52,7 +56,7 @@ public class CustomerIntegrationTest {
         );
 
         webTestClient.post()
-                .uri(API + "addCustomer")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), CustomerRegistrationRequest.class)
@@ -62,7 +66,7 @@ public class CustomerIntegrationTest {
 
         //get all customers
         List<Customer> allCustomers = webTestClient.get()
-                .uri(API + "getAllCustomers")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -89,7 +93,7 @@ public class CustomerIntegrationTest {
 
         // get customer by id;
         webTestClient.get()
-                .uri(API + "getCustomer/{id}", id)
+                .uri(API + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -106,7 +110,7 @@ public class CustomerIntegrationTest {
         String lastName = name.lastName();
         String fakerName = firstName + lastName;
         String userName = fakerName + UUID.randomUUID();
-        String password = faker.internet().password();
+        String password = passwordEncoder.encode(faker.internet().password());
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
         Gender gender = Gender.getRandomGender();
         int age = faker.random().nextInt(15, 100);
@@ -116,7 +120,7 @@ public class CustomerIntegrationTest {
         );
 
         webTestClient.post()
-                .uri(API + "addCustomer")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), CustomerRegistrationRequest.class)
@@ -126,7 +130,7 @@ public class CustomerIntegrationTest {
 
         //get all customers
         List<Customer> allCustomers = webTestClient.get()
-                .uri(API + "getAllCustomers")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -144,7 +148,7 @@ public class CustomerIntegrationTest {
 
         //delete a customer
         webTestClient.delete()
-                .uri(API + "deleteCustomer/{id}", id)
+                .uri(API + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -153,7 +157,7 @@ public class CustomerIntegrationTest {
 
         // get customer by id;
         webTestClient.get()
-                .uri(API + "getCustomer/{id}", id)
+                .uri(API + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -169,7 +173,7 @@ public class CustomerIntegrationTest {
         String lastName = name.lastName();
         String fakerName = firstName + lastName;
         String userName = fakerName + UUID.randomUUID();
-        String password = faker.internet().password();
+        String password = passwordEncoder.encode(faker.internet().password());
         String email = lastName + UUID.randomUUID() + "@codeNaren.com";
         Gender gender = Gender.getRandomGender();
         int age = faker.random().nextInt(15, 100);
@@ -178,7 +182,7 @@ public class CustomerIntegrationTest {
                 userName, firstName, lastName, email, password, gender, age);
 
         webTestClient.post()
-                .uri(API + "/addCustomer")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), CustomerRegistrationRequest.class)
@@ -187,7 +191,7 @@ public class CustomerIntegrationTest {
                 .isOk();
 
         List<Customer> allCustomers = webTestClient.get()
-                .uri(API + "getAllCustomers")
+                .uri(API)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -204,7 +208,7 @@ public class CustomerIntegrationTest {
                 .orElseThrow();
 
         int age1 = faker.random().nextInt(15, 99);
-        String password1 = faker.internet().password();
+        String password1 = passwordEncoder.encode(faker.internet().password());
         String email1 = faker.internet().emailAddress();
         String lastName1 = name.lastName();
         String firstName1 = name.firstName();
@@ -216,7 +220,7 @@ public class CustomerIntegrationTest {
         );
 
         webTestClient.put()
-                .uri(API + "updateCustomer/{id}", id)
+                .uri(API + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(updateRequest), CustomerUpdateRequest.class)
@@ -225,7 +229,7 @@ public class CustomerIntegrationTest {
                 .isOk();
 
         Customer updatedCustomer = webTestClient.get()
-                .uri(API + "getCustomer/{id}", id)
+                .uri(API + "/{id}", id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()

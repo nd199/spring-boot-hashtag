@@ -3,6 +3,7 @@ package com.codenaren.hashtag.Repository;
 import com.codenaren.hashtag.AbstractTestContainers;
 import com.codenaren.hashtag.Entity.Customer;
 import com.codenaren.hashtag.Entity.Gender;
+import com.codenaren.hashtag.TestConfig;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = NONE)
+@Import({TestConfig.class})
 class CustomerRepositoryTest extends AbstractTestContainers {
 
     private static final Faker FAKER = new Faker();
@@ -114,7 +117,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
         underTest.save(customer);
         Long id = underTest.findAll()
                 .stream()
-                .filter(c -> c.getUserName().equals(username))
+                .filter(c -> c.getUsername().equals(username))
                 .map(Customer::getId)
                 .findFirst()
                 .orElseThrow();

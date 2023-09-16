@@ -96,7 +96,7 @@ public class CustomerJdbcDataAccessService
                 """;
 
         int update = jdbcTemplate.update(sql
-                , customer.getUserName(),
+                , customer.getUsername(),
                 customer.getFirstName(), customer.getLastName(),
                 customer.getEmail(), customer.getPassword(),
                 customer.getAge(), customer.getGender().name()
@@ -115,9 +115,9 @@ public class CustomerJdbcDataAccessService
     @Override
     public void updateCustomer(Customer update) {
         String sql;
-        if (update.getUserName() != null) {
+        if (update.getUsername() != null) {
             sql = "UPDATE customer SET  user_name = ? WHERE id = ?";
-            jdbcTemplate.update(sql, update.getUserName(), update.getId());
+            jdbcTemplate.update(sql, update.getUsername(), update.getId());
         }
         if (update.getFirstName() != null) {
             sql = "UPDATE customer SET  first_name = ? WHERE id = ?";

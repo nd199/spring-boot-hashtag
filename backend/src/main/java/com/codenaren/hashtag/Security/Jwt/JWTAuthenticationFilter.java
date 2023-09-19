@@ -1,4 +1,4 @@
-package com.codenaren.hashtag.Utils.Jwt;
+package com.codenaren.hashtag.Security.Jwt;
 
 import com.codenaren.hashtag.Service.CustomerUserDetailsService;
 import jakarta.servlet.FilterChain;

@@ -1,10 +1,10 @@
 package com.codenaren.hashtag.Controller;
 
-import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Dto.CustomerDTO;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
+import com.codenaren.hashtag.Security.Jwt.JWTUtil;
 import com.codenaren.hashtag.Service.CustomerService;
-import com.codenaren.hashtag.Utils.Jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -39,12 +39,12 @@ public class CustomerController {
 
 
     @GetMapping("/customers/{id}")
-    public Customer getCustomerById(@PathVariable Long id) {
+    public CustomerDTO getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id);
     }
 
     @GetMapping("/customers")
-    public List<Customer> getAllCustomers() {
+    public List<CustomerDTO> getAllCustomers() {
         log.info("Request for getting all the Users " +
                  "method called in UserController");
         return customerService.getListOfCustomers();

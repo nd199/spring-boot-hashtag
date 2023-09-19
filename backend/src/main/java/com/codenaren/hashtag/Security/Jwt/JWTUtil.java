@@ -1,15 +1,18 @@
-package com.codenaren.hashtag.Utils.Jwt;
+package com.codenaren.hashtag.Security.Jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class JWTUtil {
@@ -23,6 +26,9 @@ public class JWTUtil {
                 Map.of("scopes", scopes));
     }
 
+    public String issueToken(String subject, List<String> scopes) {
+        return issueToken(subject, Map.of("scopes", scopes));
+    }
 
     public String issueToken(String subject, Map<String, Object> claims) {
         return Jwts.builder()
@@ -32,8 +38,8 @@ public class JWTUtil {
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(
                         Date.from(Instant.now()
-                                .plus(15,
-                                        ChronoUnit.DAYS))
+                                .plus(10,
+                                        DAYS))
                 )
                 .signWith(getSigninKey(),
                         SignatureAlgorithm.HS256)
@@ -66,5 +72,4 @@ public class JWTUtil {
         Date today = Date.from(Instant.now());
         return getClaims(jwt).getExpiration().before(today);
     }
-
 }

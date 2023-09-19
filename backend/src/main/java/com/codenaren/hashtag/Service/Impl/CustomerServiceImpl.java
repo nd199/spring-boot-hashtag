@@ -1,6 +1,8 @@
 package com.codenaren.hashtag.Service.Impl;
 
 import com.codenaren.hashtag.Dao.CustomerDao;
+import com.codenaren.hashtag.Dto.CustomerDTO;
+import com.codenaren.hashtag.Dto.Mapper.CustomerDTOMapper;
 import com.codenaren.hashtag.Entity.Customer;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -26,11 +29,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerDao customerDao;
 
+    private final CustomerDTOMapper customerDTOMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     public CustomerServiceImpl(@Qualifier("jpa") CustomerDao customerDao,
+                               CustomerDTOMapper customerDTOMapper,
                                PasswordEncoder passwordEncoder) {
         this.customerDao = customerDao;
+        this.customerDTOMapper = customerDTOMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -84,18 +91,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> getListOfCustomers() {
+    public List<CustomerDTO> getListOfCustomers() {
         log.info("getCustomerList Method in CustomerServiceImpl called");
-        return customerDao.getAllCustomers();
+        return customerDao.getAllCustomers()
+                .stream()
+                .map(customerDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Customer findCustomerByUserName(String userName) {
-        return customerDao.findCustomerByUserName(userName).orElseThrow(
-                () -> new ResourceNotFound(
-                        "Customer with userName %s does not exist".formatted(userName)
-                )
-        );
+    public CustomerDTO findCustomerByUserName(String userName) {
+        return customerDao.findCustomerByUserName(userName)
+                .map(customerDTOMapper)
+                .orElseThrow(
+                        () -> new ResourceNotFound(
+                                "Customer with userName %s does not exist".formatted(userName)
+                        )
+                );
     }
 
 
@@ -103,8 +115,11 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateCustomer(CustomerUpdateRequest updateRequest,
                                Long id) {
         log.info("update customer called in customer service impl");
-        Customer customer = getCustomerById(id);
-
+        Customer customer = customerDao.getByCustomerId(id)
+                .orElseThrow(()
+                        -> new ResourceNotFound(
+                        "Customer with id [%s] not found".formatted(id))
+                );
         boolean isPresent = false;
 
         if (updateRequest.userName() != null &&
@@ -155,8 +170,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(Long id) {
+    public CustomerDTO getCustomerById(Long id) {
         return customerDao.getByCustomerId(id)
+                .map(customerDTOMapper)
                 .orElseThrow(()
                         -> new ResourceNotFound(
                         "Customer with id [%s] not found".formatted(id))

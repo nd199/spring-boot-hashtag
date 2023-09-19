@@ -1,6 +1,8 @@
 package com.codenaren.hashtag.Service.Impl;
 
 import com.codenaren.hashtag.Dao.Impl.CustomerDaoImpl;
+import com.codenaren.hashtag.Dto.CustomerDTO;
+import com.codenaren.hashtag.Dto.Mapper.CustomerDTOMapper;
 import com.codenaren.hashtag.Entity.Customer;
 import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.*;
 class CustomerServiceImplTest {
 
     private static final Faker FAKER = new Faker();
+    private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
     @Rule
     public MockitoRule rule;
     private CustomerServiceImpl underTest;
@@ -40,7 +43,7 @@ class CustomerServiceImplTest {
     @BeforeEach
     void setUp() {
         rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-        underTest = new CustomerServiceImpl(customerDao, passwordEncoder);
+        underTest = new CustomerServiceImpl(customerDao, customerDTOMapper, passwordEncoder);
     }
 
     @Test
@@ -107,8 +110,10 @@ class CustomerServiceImplTest {
         //When
         when(customerDao.findCustomerByUserName(userName)).thenReturn(Optional.of(customer));
         //Then
-        Customer customerByUserName = underTest.findCustomerByUserName(userName);
-        assertThat(customerByUserName).isEqualTo(customer);
+        CustomerDTO expected = underTest.findCustomerByUserName(userName);
+        CustomerDTO actual = underTest.findCustomerByUserName(userName);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 
@@ -170,10 +175,12 @@ class CustomerServiceImplTest {
 
         when(customerDao.getByCustomerId(id)).
                 thenReturn(Optional.of(customer));
+
+        CustomerDTO expected = underTest.getCustomerById(id);
         //When
-        Customer actual = underTest.getCustomerById(id);
+        CustomerDTO actual = underTest.getCustomerById(id);
         //Then
-        assertThat(actual).isEqualTo(customer);
+        assertThat(actual).isEqualTo(expected);
     }
 
 

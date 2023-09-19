@@ -17,7 +17,6 @@ public class CustomerUserDetailsService implements UserDetailsService {
     }
 
 
-
     @Override
     public UserDetails loadUserByUsername(String userName)
             throws UsernameNotFoundException {

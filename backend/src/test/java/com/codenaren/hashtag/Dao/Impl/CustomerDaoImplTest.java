@@ -1,14 +1,16 @@
 package com.codenaren.hashtag.Dao.Impl;
 
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.Repository.CustomerRepository;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.verify;
 
 
 class CustomerDaoImplTest {
@@ -44,14 +46,14 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 emailAddress,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         customerRepository.save(customer);
         //When
         underTest.existsByEmail(emailAddress);
         //Then
-        Mockito.verify(customerRepository).existsByEmail(emailAddress);
+        verify(customerRepository).existsByEmail(emailAddress);
     }
 
     @Test
@@ -63,14 +65,14 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         customerRepository.save(customer);
         //When
         underTest.existsByUserName(username);
         //Then
-        Mockito.verify(customerRepository).existsByUserName(username);
+        verify(customerRepository).existsByUserName(username);
     }
 
     @Test
@@ -82,36 +84,13 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         //When
         underTest.registerCustomer(customer);
         //Then
-        Mockito.verify(customerRepository).save(customer);
-    }
-
-    @Test
-    void removeCustomerByUserNameAndEmail() {
-
-        //Given
-        String username = FAKER.name().username();
-        String email = FAKER.internet().safeEmailAddress();
-        Customer customer = new Customer(
-                username,
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.internet().password(),
-                FAKER.dog().gender(),
-                FAKER.random().nextInt(18, 99)
-        );
-        //When
-        customerRepository.save(customer);
-        //When
-        underTest.removeCustomerByUserNameAndEmail(username, email);
-        //Then
-        Mockito.verify(customerRepository).deleteByUserNameAndEmail(username, email);
+        verify(customerRepository).save(customer);
     }
 
     @Test
@@ -122,7 +101,7 @@ class CustomerDaoImplTest {
         String lastName = FAKER.name().lastName();
         String email = FAKER.internet().safeEmailAddress();
         String password = FAKER.internet().password();
-        String gender = FAKER.dog().gender();
+        Gender gender = Gender.MALE;
         Integer age = FAKER.random().nextInt(18, 99);
         Customer customer = new Customer(
                 username,
@@ -136,7 +115,7 @@ class CustomerDaoImplTest {
         //When
         underTest.updateCustomer(customer);
         //Then
-        Mockito.verify(customerRepository).save(customer);
+        verify(customerRepository).save(customer);
     }
 
     @Test
@@ -144,7 +123,7 @@ class CustomerDaoImplTest {
         //When
         underTest.getAllCustomers();
         //Then
-        Mockito.verify(customerRepository)
+        verify(customerRepository)
                 .findAll();
     }
 
@@ -157,15 +136,15 @@ class CustomerDaoImplTest {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         //When
         customerRepository.save(customer);
         //When
-        underTest.findCustomerByUserName(customer.getUserName());
+        underTest.findCustomerByUserName(customer.getUsername());
         //Then
-        Mockito.verify(customerRepository).getCustomerByUserName(customer.getUserName());
+        verify(customerRepository).getCustomerByUserName(customer.getUsername());
     }
 
     @Test
@@ -175,27 +154,27 @@ class CustomerDaoImplTest {
         //When
         underTest.getByCustomerId(id);
         //Then
-        Mockito.verify(customerRepository)
+        verify(customerRepository)
                 .findById(id);
     }
 
     @Test
-    void existsByUserNameAndEmail() {
+    void existsCustomerById() {
         //Given
-        String email = FAKER.internet().safeEmailAddress();
-        String userName = FAKER.name().username();
-        Customer customer = new Customer(
-                userName,
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.internet().password(),
-                FAKER.dog().gender(),
-                FAKER.random().nextInt(18, 99)
-        );
+        Long id = 1L;
         //When
-        underTest.existsByUserNameAndEmail(userName, email);
+        underTest.existsCustomerById(id);
         //Then
-        Mockito.verify(customerRepository).existsByUserNameAndEmail(userName, email);
+        verify(customerRepository).existsCustomerById(id);
+    }
+
+    @Test
+    void testRemoveCustomerById() {
+        //Given
+        Long id = 1L;
+        //When
+        underTest.removeCustomerById(id);
+        //Then
+        verify(customerRepository).deleteCustomerById(id);
     }
 }

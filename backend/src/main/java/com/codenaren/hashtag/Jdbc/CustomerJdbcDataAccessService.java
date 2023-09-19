@@ -18,7 +18,7 @@ public class CustomerJdbcDataAccessService
 
     private final CustomerRowMapper customerRowMapper;
     private final JdbcTemplate jdbcTemplate;
-    private CustomerDao customerDao;
+
 
     public CustomerJdbcDataAccessService(CustomerRowMapper customerRowMapper, JdbcTemplate jdbcTemplate) {
         this.customerRowMapper = customerRowMapper;
@@ -48,7 +48,42 @@ public class CustomerJdbcDataAccessService
 
     @Override
     public boolean existsByUserName(String userName) {
-        return false;
+        boolean exist = true;
+
+        var sql = """
+                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                from customer where email = ?
+                """;
+
+        Customer cus = jdbcTemplate.query(sql, customerRowMapper, userName)
+                .stream().findFirst().orElseThrow(
+                        () -> new ResourceNotFound("User does not exist with user name : " + userName)
+                );
+
+        if (!Objects.nonNull(cus)) {
+            exist = false;
+        }
+        return exist;
+    }
+
+    @Override
+    public boolean existsCustomerById(Long id) {
+        boolean exist = true;
+
+        var sql = """
+                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                from customer where id = ?
+                """;
+
+        Customer cus = jdbcTemplate.query(sql, customerRowMapper, id)
+                .stream().findFirst().orElseThrow(
+                        () -> new ResourceNotFound("User does not exist with user name : " + id)
+                );
+
+        if (!Objects.nonNull(cus)) {
+            exist = false;
+        }
+        return exist;
     }
 
     @Override
@@ -56,48 +91,33 @@ public class CustomerJdbcDataAccessService
         var sql = """
                                
                  INSERT  INTO  customer(
-                user_name, first_name, last_name, email, password, gender, age
+                user_name, first_name, last_name, email, password, age, gender
                 ) VALUES (?,?,?,?,?,?,?)
                 """;
 
         int update = jdbcTemplate.update(sql
-                , customer.getUserName(),
+                , customer.getUsername(),
                 customer.getFirstName(), customer.getLastName(),
-                customer.getEmail(), customer.getPassword(), customer.getGender(), customer.getAge()
+                customer.getEmail(), customer.getPassword(),
+                customer.getAge(), customer.getGender().name()
         );
         System.out.println("Jdbc template.update" + update);
     }
 
     @Override
-    public void removeCustomerByUserNameAndEmail(String userName, String email) {
-        var sql =
-                """
-                                 DELETE FROM customer WHERE user_name =
-                                  ? and email = ?
-                        """;
-        jdbcTemplate.update(sql, userName, email);
-    }
-
-    @Override
-    public boolean existsByUserNameAndEmail(String userName, String email) {
-        var sql =
-                """
-                                 Select count(id)
-                                  From customer WHERE user_name =
-                                  ? and email = ?
-                        """;
-        Integer count = jdbcTemplate.
-                queryForObject(sql, Integer.class, userName, email);
-
-        return count != null && count > 0;
+    public void removeCustomerById(Long id) {
+        var sql = """
+                DELETE FROM customer WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
     public void updateCustomer(Customer update) {
         String sql;
-        if (update.getUserName() != null) {
+        if (update.getUsername() != null) {
             sql = "UPDATE customer SET  user_name = ? WHERE id = ?";
-            jdbcTemplate.update(sql, update.getUserName(), update.getId());
+            jdbcTemplate.update(sql, update.getUsername(), update.getId());
         }
         if (update.getFirstName() != null) {
             sql = "UPDATE customer SET  first_name = ? WHERE id = ?";
@@ -116,13 +136,13 @@ public class CustomerJdbcDataAccessService
             sql = "UPDATE customer SET  password = ? WHERE id = ?";
             jdbcTemplate.update(sql, update.getPassword(), update.getId());
         }
-        if (update.getGender() != null) {
-            sql = "UPDATE customer SET  gender = ? WHERE id = ?";
-            jdbcTemplate.update(sql, update.getGender(), update.getId());
-        }
         if (update.getAge() >= 15) {
             sql = "UPDATE customer SET  age = ? WHERE id = ?";
             jdbcTemplate.update(sql, update.getAge(), update.getId());
+        }
+        if (update.getGender() != null) {
+            sql = "UPDATE customer SET  gender = ? WHERE id = ?";
+            jdbcTemplate.update(sql, update.getGender(), update.getId());
         }
     }
 
@@ -131,7 +151,7 @@ public class CustomerJdbcDataAccessService
 
         var sql =
                 """
-                        SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                        SELECT  id, user_name, first_name, last_name, email, password, age, gender
                         from customer WHERE id = ?
                         """;
         return jdbcTemplate.query(sql, customerRowMapper, id)
@@ -142,7 +162,7 @@ public class CustomerJdbcDataAccessService
     @Override
     public List<Customer> getAllCustomers() {
         var sql = """
-                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                SELECT  id, user_name, first_name, last_name, email, password, age, gender
                 from customer
                 """;
         return jdbcTemplate.query(sql, customerRowMapper);
@@ -151,7 +171,7 @@ public class CustomerJdbcDataAccessService
     @Override
     public Optional<Customer> findCustomerByUserName(String userName) {
         var sql = """
-                SELECT  id, user_name, first_name, last_name, email, password, gender, age
+                SELECT  id, user_name, first_name, last_name, email, password, age, gender
                 from customer where user_name = ?
                 """;
         return jdbcTemplate.query(sql, customerRowMapper, userName)

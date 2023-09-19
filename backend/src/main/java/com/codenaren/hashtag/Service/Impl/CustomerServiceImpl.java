@@ -1,6 +1,8 @@
 package com.codenaren.hashtag.Service.Impl;
 
 import com.codenaren.hashtag.Dao.CustomerDao;
+import com.codenaren.hashtag.Dto.CustomerDTO;
+import com.codenaren.hashtag.Dto.Mapper.CustomerDTOMapper;
 import com.codenaren.hashtag.Entity.Customer;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
@@ -12,10 +14,12 @@ import com.codenaren.hashtag.Service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -25,18 +29,26 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerDao customerDao;
 
-    public CustomerServiceImpl(@Qualifier("jpa") CustomerDao customerDao) {
+    private final CustomerDTOMapper customerDTOMapper;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public CustomerServiceImpl(@Qualifier("jpa") CustomerDao customerDao,
+                               CustomerDTOMapper customerDTOMapper,
+                               PasswordEncoder passwordEncoder) {
         this.customerDao = customerDao;
+        this.customerDTOMapper = customerDTOMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private static Customer getCustomer(
+    private Customer getCustomer(
             CustomerRegistrationRequest request) {
         return new Customer(
                 request.userName(),
                 request.firstName(),
                 request.lastName(),
                 request.email(),
-                request.password(),
+                passwordEncoder.encode(request.password()),
                 request.gender(),
                 request.age()
         );
@@ -60,11 +72,11 @@ public class CustomerServiceImpl implements CustomerService {
             } else {
                 if (customerDao.existsByUserName(request.userName())) {
                     throw new ResourceAlreadyExists(
-                            "Customer", "userName", request.userName()
+                            "Username already taken"
                     );
                 } else if (customerDao.existsByEmail(request.email())) {
                     throw new ResourceAlreadyExists(
-                            "Customer", "email", request.email()
+                            "Email already taken"
                     );
                 } else {
                     Customer customer = getCustomer(request);
@@ -78,34 +90,24 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-
     @Override
-    public void removeCustomerByUserNameAndEmail(String userName, String email) {
-        log.info("removeCustomer Method in CustomerServiceImpl called with " +
-                 "userName & email : {},{}", userName, email);
-        if (customerDao.existsByUserNameAndEmail(userName, email)) {
-            customerDao.removeCustomerByUserNameAndEmail(userName, email);
-        } else {
-            throw new ResourceNotFound(
-                    "No Customer Found with provided Username and email : {%s},{%s}"
-                            .formatted(userName, email)
-            );
-        }
-    }
-
-    @Override
-    public List<Customer> getListOfCustomers() {
+    public List<CustomerDTO> getListOfCustomers() {
         log.info("getCustomerList Method in CustomerServiceImpl called");
-        return customerDao.getAllCustomers();
+        return customerDao.getAllCustomers()
+                .stream()
+                .map(customerDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Customer findCustomerByUserName(String userName) {
-        return customerDao.findCustomerByUserName(userName).orElseThrow(
-                () -> new ResourceNotFound(
-                        "Customer with userName %s does not exist".formatted(userName)
-                )
-        );
+    public CustomerDTO findCustomerByUserName(String userName) {
+        return customerDao.findCustomerByUserName(userName)
+                .map(customerDTOMapper)
+                .orElseThrow(
+                        () -> new ResourceNotFound(
+                                "Customer with userName %s does not exist".formatted(userName)
+                        )
+                );
     }
 
 
@@ -113,15 +115,16 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateCustomer(CustomerUpdateRequest updateRequest,
                                Long id) {
         log.info("update customer called in customer service impl");
-        Customer customer = getCustomerById(id);
-
-        System.out.println(customer);
-
+        Customer customer = customerDao.getByCustomerId(id)
+                .orElseThrow(()
+                        -> new ResourceNotFound(
+                        "Customer with id [%s] not found".formatted(id))
+                );
         boolean isPresent = false;
 
         if (updateRequest.userName() != null &&
             !updateRequest.userName()
-                    .equals(customer.getUserName())) {
+                    .equals(customer.getUsername())) {
             customer.setUserName(updateRequest.userName());
             isPresent = true;
         }
@@ -145,8 +148,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setAge(updateRequest.age());
             isPresent = true;
         }
-        if (updateRequest.gender() != null &&
-            !updateRequest.gender().equals(customer.getGender())) {
+        if (updateRequest.gender() != null) {
             customer.setGender(updateRequest.gender());
             isPresent = true;
         }
@@ -154,7 +156,7 @@ public class CustomerServiceImpl implements CustomerService {
             !updateRequest.email().equals(customer.getEmail())) {
             if (customerDao.existsByEmail(updateRequest.email())) {
                 throw new ResourceAlreadyExists(
-                        "Customer", "email", updateRequest.email()
+                        "Email already taken"
                 );
             }
             customer.setEmail(updateRequest.email());
@@ -168,10 +170,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(Long id) {
-        return customerDao.getByCustomerId(id).orElseThrow(
-                () -> new ResourceNotFound("Customer with id : %s does not exist".formatted(id))
-        );
+    public CustomerDTO getCustomerById(Long id) {
+        return customerDao.getByCustomerId(id)
+                .map(customerDTOMapper)
+                .orElseThrow(()
+                        -> new ResourceNotFound(
+                        "Customer with id [%s] not found".formatted(id))
+                );
+    }
+
+    @Override
+    public void removeCustomerById(Long customerId) {
+        if (!customerDao.existsCustomerById(customerId)) {
+            throw new ResourceNotFound(
+                    "Customer with id [%s] not found".formatted(customerId)
+            );
+        }
+        customerDao.removeCustomerById(customerId);
     }
 
 

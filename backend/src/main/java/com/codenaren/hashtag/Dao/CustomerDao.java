@@ -12,11 +12,11 @@ public interface CustomerDao {
 
     boolean existsByUserName(String userName);
 
+    boolean existsCustomerById(Long id);
+
     void registerCustomer(Customer user);
 
-    void removeCustomerByUserNameAndEmail(String userName, String email);
-
-    boolean existsByUserNameAndEmail(String userName, String email);
+    void removeCustomerById(Long id);
 
     void updateCustomer(Customer user);
 
@@ -25,4 +25,6 @@ public interface CustomerDao {
     Optional<Customer> findCustomerByUserName(String userName);
 
     Optional<Customer> getByCustomerId(Long id);
+
+
 }

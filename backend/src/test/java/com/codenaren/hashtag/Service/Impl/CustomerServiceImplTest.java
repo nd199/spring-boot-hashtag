@@ -1,7 +1,10 @@
 package com.codenaren.hashtag.Service.Impl;
 
 import com.codenaren.hashtag.Dao.Impl.CustomerDaoImpl;
+import com.codenaren.hashtag.Dto.CustomerDTO;
+import com.codenaren.hashtag.Dto.Mapper.CustomerDTOMapper;
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
 import com.codenaren.hashtag.EntityRecord.CustomerRegistrationRequest;
 import com.codenaren.hashtag.EntityRecord.CustomerUpdateRequest;
 import com.codenaren.hashtag.Exceptions.ResourceNotFound;
@@ -16,28 +19,31 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.quality.Strictness;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceImplTest {
 
     private static final Faker FAKER = new Faker();
+    private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
     @Rule
     public MockitoRule rule;
     private CustomerServiceImpl underTest;
     @Mock
     private CustomerDaoImpl customerDao;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-        underTest = new CustomerServiceImpl(customerDao);
+        underTest = new CustomerServiceImpl(customerDao, customerDTOMapper, passwordEncoder);
     }
 
     @Test
@@ -49,8 +55,12 @@ class CustomerServiceImplTest {
 
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(
                 "Keciaa12", "lopez", "1o",
-                email, "poofi", 20, "female"
+                email, "password", Gender.getRandomGender(), 20
         );
+
+        String passwordTest = "a432f;ap.q;1.w;31123";
+
+        when(passwordEncoder.encode(request.password())).thenReturn(passwordTest);
 
         //When
         underTest.addCustomer(request);
@@ -64,11 +74,11 @@ class CustomerServiceImplTest {
         Customer customerCaptured = customerArgumentCaptor.getValue();
 
         assertThat(customerCaptured.getId()).isNull();
-        assertThat(customerCaptured.getUserName()).isEqualTo(request.userName());
+        assertThat(customerCaptured.getUsername()).isEqualTo(request.userName());
         assertThat(customerCaptured.getFirstName()).isEqualTo(request.firstName());
         assertThat(customerCaptured.getLastName()).isEqualTo(request.lastName());
         assertThat(customerCaptured.getEmail()).isEqualTo(request.email());
-        assertThat(customerCaptured.getPassword()).isEqualTo(request.password());
+        assertThat(customerCaptured.getPassword()).isEqualTo(passwordTest);
         assertThat(customerCaptured.getGender()).isEqualTo(request.gender());
         assertThat(customerCaptured.getAge()).isEqualTo(request.age());
 
@@ -94,14 +104,16 @@ class CustomerServiceImplTest {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
         //When
         when(customerDao.findCustomerByUserName(userName)).thenReturn(Optional.of(customer));
         //Then
-        Customer customerByUserName = underTest.findCustomerByUserName(userName);
-        assertThat(customerByUserName).isEqualTo(customer);
+        CustomerDTO expected = underTest.findCustomerByUserName(userName);
+        CustomerDTO actual = underTest.findCustomerByUserName(userName);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 
@@ -112,7 +124,7 @@ class CustomerServiceImplTest {
         //When
         Customer customer = new Customer(
                 "ram1999", "Ram", "D", "r@gmail.com",
-                "rmd@2022", "Male", 23
+                "rmd@2022", Gender.getRandomGender(), 23
         );
         //Then
         when(customerDao.getByCustomerId(id))
@@ -121,7 +133,7 @@ class CustomerServiceImplTest {
         CustomerUpdateRequest updateRequest =
                 new CustomerUpdateRequest(
                         "ram125", "Ram", "d", email,
-                        "rm@2022hiAugust", "Male", 23
+                        "rm@2022hiAugust", Gender.getRandomGender(), 23
                 );
         when(customerDao.existsByEmail(email)).thenReturn(false);
 
@@ -136,7 +148,7 @@ class CustomerServiceImplTest {
         Customer customerCaptured = customerArgumentCaptor.getValue();
 
         assertThat(customerCaptured.getId()).isNull();
-        assertThat(customerCaptured.getUserName()).isEqualTo(updateRequest.userName());
+        assertThat(customerCaptured.getUsername()).isEqualTo(updateRequest.userName());
         assertThat(customerCaptured.getFirstName()).isEqualTo(updateRequest.firstName());
         assertThat(customerCaptured.getLastName()).isEqualTo(updateRequest.lastName());
         assertThat(customerCaptured.getEmail()).isEqualTo(updateRequest.email());
@@ -148,24 +160,27 @@ class CustomerServiceImplTest {
     @Test
     void canGetCustomerById() {
         //Given
+        Long id = 10L;
         String email = FAKER.internet().safeEmailAddress();
         Customer customer = new Customer(
+                id,
                 FAKER.name().username(),
                 FAKER.name().firstName(),
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
-        customer.setId(2L);
 
-        when(customerDao.getByCustomerId(customer.getId())).
+        when(customerDao.getByCustomerId(id)).
                 thenReturn(Optional.of(customer));
+
+        CustomerDTO expected = underTest.getCustomerById(id);
         //When
-        Customer actual = underTest.getCustomerById(customer.getId());
+        CustomerDTO actual = underTest.getCustomerById(id);
         //Then
-        assertThat(actual).isEqualTo(customer);
+        assertThat(actual).isEqualTo(expected);
     }
 
 
@@ -180,27 +195,33 @@ class CustomerServiceImplTest {
         assertThatThrownBy(
                 () -> underTest.getCustomerById(id))
                 .isInstanceOf(ResourceNotFound.class)
-                .hasMessage("Customer with id : %s does not exist".formatted(id));
+                .hasMessage("Customer with id [%s] not found".formatted(id));
     }
 
     @Test
-    void removeCustomerByUserNameAndEmail() {
+    void removeCustomerById() {
         //Given
-        String email = "lopez@codeNaren.com";
-        String userName = "Keciaa12";
-        when(customerDao.existsByEmail(email)).thenReturn(false);
+        Long id = 10L;
 
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                userName, "lopez", "1o",
-                email, "poofi", 20, "female"
-        );
-        underTest.addCustomer(request);
+        when(customerDao.existsCustomerById(id)).thenReturn(true);
         //When
-        when(customerDao.existsByUserNameAndEmail(userName, email))
-                .thenReturn(true);
-
-        underTest.removeCustomerByUserNameAndEmail(userName, email);
+        underTest.removeCustomerById(id);
         //Then
-        assertThat(customerDao.existsByEmail(email)).isFalse();
+        verify(customerDao).removeCustomerById(id);
+    }
+
+    @Test
+    void throwExceptionWhenCustomerIdDoesNotExistDuringDeletion() {
+        //Given
+        Long id = 10L;
+
+        when(customerDao.existsCustomerById(id)).thenReturn(false);
+        //When
+        assertThatThrownBy(() -> underTest.removeCustomerById(id))
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage(
+                        "Customer with id [%s] not found".formatted(id));
+        //Then
+        verify(customerDao, never()).removeCustomerById(id);
     }
 }

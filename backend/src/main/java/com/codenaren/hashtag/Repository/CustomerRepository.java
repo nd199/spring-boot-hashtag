@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    boolean existsByUserNameAndEmail(String userName, String email);
+    boolean existsCustomerById(Long id);
 
     Optional<Customer> getCustomerById(Long id);
 
@@ -18,5 +18,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> getCustomerByUserName(String userName);
 
-    void deleteByUserNameAndEmail(String userName, String email);
+    void deleteCustomerById(Long id);
 }

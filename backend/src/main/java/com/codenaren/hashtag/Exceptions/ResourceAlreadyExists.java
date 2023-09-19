@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ResourceAlreadyExists extends RuntimeException {
 
 
-    public ResourceAlreadyExists(String resourceName, String fieldName, Object fieldValue) {
-        super(String.format("%s found with %s : '%s'", resourceName, fieldName, fieldValue));
-        log.info("Resource Already exist exception called on : {},{},{}",
-                resourceName, fieldName, fieldValue);
+    public ResourceAlreadyExists(String message) {
+        super(message);
+        log.info("Resource already found Invoked");
     }
 }

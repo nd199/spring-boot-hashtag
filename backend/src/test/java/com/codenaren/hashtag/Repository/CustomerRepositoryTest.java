@@ -2,6 +2,8 @@ package com.codenaren.hashtag.Repository;
 
 import com.codenaren.hashtag.AbstractTestContainers;
 import com.codenaren.hashtag.Entity.Customer;
+import com.codenaren.hashtag.Entity.Gender;
+import com.codenaren.hashtag.TestConfig;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +21,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = NONE)
+@Import({TestConfig.class})
 class CustomerRepositoryTest extends AbstractTestContainers {
 
     private static final Faker FAKER = new Faker();
@@ -44,7 +48,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -75,7 +79,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
@@ -107,13 +111,13 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
         underTest.save(customer);
         Long id = underTest.findAll()
                 .stream()
-                .filter(c -> c.getUserName().equals(username))
+                .filter(c -> c.getUsername().equals(username))
                 .map(Customer::getId)
                 .findFirst()
                 .orElseThrow();
@@ -134,7 +138,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
     }
 
     @Test
-    void testDeleteByUserNameAndEmail() {
+    void testDeleteById() {
         //Given
         String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
         String username = FAKER.name().username();
@@ -144,19 +148,20 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.getRandomGender(),
                 FAKER.random().nextInt(18, 99)
         );
+
+        customer.setId(2L);
+
         underTest.save(customer);
+
         //When
-        underTest.deleteByUserNameAndEmail(username, email);
+        underTest.deleteCustomerById(customer.getId());
         //Checking
-        Boolean existsByEmail = underTest.existsByEmail(email);
-        Boolean existsByUserName = underTest.existsByUserName(username);
+        Boolean existsById = underTest.existsById(customer.getId());
         //Then
-        assertThat(existsByEmail).isFalse();
-        //Fails when given true as Customer is already removed/deleted with userName
-        assertThat(existsByUserName).isFalse();
+        assertThat(existsById).isFalse();
     }
 
     @Test
@@ -169,7 +174,7 @@ class CustomerRepositoryTest extends AbstractTestContainers {
                 FAKER.name().lastName(),
                 email,
                 FAKER.internet().password(),
-                FAKER.dog().gender(),
+                Gender.MALE,
                 FAKER.random().nextInt(18, 99)
         );
 

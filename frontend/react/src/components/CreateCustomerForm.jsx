@@ -39,12 +39,11 @@ const MySelect = ({label, ...props}) => {
 };
 
 // And now we can use these
-const CreateCustomerForm = ({fetchCustomers}) => {
+const CreateCustomerForm = ({onSucess}) => {
     return (
         <>
-
             <Formik
-
+                validateOnMount={true}
                 initialValues={{
                     userName: '',
                     firstName: '',
@@ -95,7 +94,7 @@ const CreateCustomerForm = ({fetchCustomers}) => {
                                 `Customer ${customer.firstName} profile,  
                                  created successfully`
                             )
-                            fetchCustomers();
+                            onSucess(response.headers["authorization"]);
                         }).catch(error => {
                         console.log(error)
                         errorAlert(

@@ -30,7 +30,6 @@ const AuthProvider = ({children}) => {
                 localStorage.setItem("AccessToken", jwtToken);
 
                 const decodedToken = jwtDecode(jwtToken);
-
                 setCustomer({
                     username: decodedToken.sub,
                     roles: decodedToken.scopes

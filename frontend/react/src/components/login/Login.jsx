@@ -125,6 +125,9 @@ const Login = () => {
                              alignSelf={"center"}
                     >Sign in to your account</Heading>
                     <LoginForm/>
+                    <Link color={"blue.500"} href={"/signup"} textAlign={"end"}>
+                        Dont have an account?.. SignUp now.
+                    </Link>
                 </Stack>
             </Flex>
             <Flex
